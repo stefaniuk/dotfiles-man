@@ -1,0 +1,111 @@
+#!/bin/bash
+
+app_dir=$(realpath $(cd "$(dirname "$0" 2> /dev/null)"; pwd))
+man_dir=$(realpath $app_dir/../../man)
+tmp_dir=$(realpath $app_dir/../../tmp/man)
+
+arg_all=$(echo "$*" | grep -Eo -- "-a|--list-all")
+arg_raw=$(echo "$*" | grep -Eo -- "-r|--show-raw")
+arg_help=$(echo "$*" | grep -Eo -- "-h|--help")
+criteria=$(for arg in $*; do [[ $arg != -* ]] && echo $arg; done)
+
+function main {
+
+    [ -n "$arg_help" ] || [ -z "$*" ] && { usage; exit 0; }
+    [ -n "$arg_all" ] && { search; exit 0; }
+
+    result=$(search)
+    count=$(echo "$result" | sed '/^\s*#/d;/^\s*$/d' | wc -l)
+    if [ $count -eq 0 ]; then
+        print_err "Nothing found"
+        exit 1
+    elif [ $count -gt 1 ]; then
+        echo "$result"
+        print_err "More than one file found"
+        exit 2
+    else
+        process $man_dir/$result
+    fi
+}
+
+function search {
+
+    files=$(for file in $(find $man_dir -type f); do echo $file | sed "s;$man_dir/;;g"; done)
+    for file in $files; do
+        str=$file
+        for criterion in $criteria; do
+            str=$(echo $str | grep $criterion)
+        done
+        [ -n "$str" ] && echo $str
+    done
+}
+
+function process {
+
+    file=$1
+    if [ "${file##*.}" == "md" ]; then
+        view-markdown $file
+    elif [[ "${file##*.}" =~ ^(pdf) ]]; then
+        view-document $file
+    elif [[ "${file##*.}" =~ ^(jpeg|png|svg) ]]; then
+        view-image $file
+    else
+        view-source $file
+    fi
+}
+
+function view-markdown {
+
+    if [ -n "$arg_raw" ]; then
+        printf "\n"
+        cat $1 | \
+            sed "s/^## /`printf "${bold}${white}"`## /g" | \
+            sed "s/^#### /`printf "${blue}"`#### /g" | \
+            perl -p -e "s/\n/${reset}\n/"
+        printf "\n"
+    else
+        file=$tmp_dir/$(echo $1 | md5).html
+        perl $app_dir/markdown.pl --html4tags $1 > $file
+        [ $DIST == "macosx" ] && open $file > /dev/null 2>&1
+        [ $DIST == "ubuntu" ] && gnome-open $file > /dev/null 2>&1
+    fi
+}
+
+function view-document {
+
+    [ $DIST == "macosx" ] && open $1 > /dev/null 2>&1
+    [ $DIST == "ubuntu" ] && gnome-open $1 > /dev/null 2>&1
+}
+
+function view-image {
+
+    [ $DIST == "macosx" ] && open $1 > /dev/null 2>&1
+    [ $DIST == "ubuntu" ] && eog $1 > /dev/null 2>&1
+}
+
+function view-source {
+
+    if [ -n "$arg_raw" ]; then
+        printf "\n"
+        which pygmentize > /dev/null 2>&1 && \
+            pygmentize -g $1 || cat $1
+        printf "\n"
+    else
+        atom $1
+    fi
+}
+
+function usage {
+
+    local file=$(basename $0 2> /dev/null)
+    printf "\nUsage: ${file} term1 [term2 term3 ...]\n"
+    printf "\nOptions:\n"
+    printf "\t-a|--list-all\n"
+    printf "\t-r|--show-raw\n"
+    printf "\t-h|--help\n"
+    printf "\n"
+}
+
+main $*
+
+exit 0
