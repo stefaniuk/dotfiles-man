@@ -15,4 +15,6 @@
     docker-machine ssh $NAME "docker swarm init --advertise-addr $IP" # initialise as a manager
     docker-machine rm $NAME
 
+    eval "$(docker-machine env $NAME)"
+
     docker node ls
