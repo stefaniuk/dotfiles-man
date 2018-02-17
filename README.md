@@ -25,3 +25,8 @@ Usage
 
     $ dotm -r versioning    # show it terminal
     $ dotm versioning       # show it browser
+
+TODO
+----
+
+* Improve performance

@@ -9,12 +9,14 @@ arg_raw=$(echo "$*" | grep -Eo -- "-r|--show-raw")
 arg_help=$(echo "$*" | grep -Eo -- "-h|--help")
 criteria=$(for arg in $*; do [[ $arg != -* ]] && echo $arg; done)
 
+declare -a dirs=($man_dir ~/Dropbox/manuals)
+
 function main {
 
     [ -n "$arg_help" ] || [ -z "$*" ] && { usage; exit 0; }
-    [ -n "$arg_all" ] && { search; exit 0; }
+    [ -n "$arg_all" ] && { search "${dirs[@]}"; exit 0; }
 
-    result=$(search)
+    result=$(search "${dirs[@]}")
     count=$(echo "$result" | sed '/^\s*#/d;/^\s*$/d' | wc -l)
     if [ $count -eq 0 ]; then
         print_err "Nothing found"
@@ -24,19 +26,23 @@ function main {
         print_err "More than one file found"
         exit 2
     else
-        process $man_dir/$result
+        process $result
     fi
 }
 
 function search {
 
-    files=$(for file in $(find $man_dir -type f); do echo $file | sed "s;$man_dir/;;g"; done)
-    for file in $files; do
-        str=$file
-        for criterion in $criteria; do
-            str=$(echo $str | grep $criterion)
+    dirs=("$@")
+    for dir in "${dirs[@]}"; do
+        [ ! -d $dir ] && return
+        files=$(for file in $(find $dir -type f); do echo $file; done)
+        for file in $files; do
+            str=$file
+            for criterion in $criteria; do
+                str=$(echo $str | grep $criterion)
+            done
+            [ -n "$str" ] && echo $str
         done
-        [ -n "$str" ] && echo $str
     done
 }
 
@@ -56,42 +62,46 @@ function process {
 
 function view-markdown {
 
+    file=$1
     if [ -n "$arg_raw" ]; then
         printf "\n"
-        cat $1 | \
+        cat $file | \
             sed "s/^## /`printf "${bold}${white}"`## /g" | \
             sed "s/^#### /`printf "${blue}"`#### /g" | \
             perl -p -e "s/\n/${reset}\n/"
         printf "\n"
     else
-        file=$tmp_dir/$(echo $1 | md5).html
-        perl $app_dir/markdown.pl --html4tags $1 > $file
-        [ $DIST == "macosx" ] && open -a "Google Chrome" --args $file > /dev/null 2>&1
-        [ $DIST == "ubuntu" ] && gnome-open $file > /dev/null 2>&1
+        html=$tmp_dir/$(echo $file | md5).html
+        perl $app_dir/markdown.pl --html4tags $file > $html
+        [ $DIST == "macosx" ] && open -a "Google Chrome" -n --args $html > /dev/null 2>&1 ||:
+        [ $DIST == "ubuntu" ] && gnome-open $html > /dev/null 2>&1 ||:
     fi
 }
 
 function view-document {
 
-    [ $DIST == "macosx" ] && open $1 > /dev/null 2>&1
-    [ $DIST == "ubuntu" ] && gnome-open $1 > /dev/null 2>&1
+    file=$1
+    [ $DIST == "macosx" ] && open $file > /dev/null 2>&1
+    [ $DIST == "ubuntu" ] && gnome-open $file > /dev/null 2>&1
 }
 
 function view-image {
 
-    [ $DIST == "macosx" ] && open $1 > /dev/null 2>&1
-    [ $DIST == "ubuntu" ] && eog $1 > /dev/null 2>&1
+    file=$1
+    [ $DIST == "macosx" ] && open $file > /dev/null 2>&1
+    [ $DIST == "ubuntu" ] && eog $file > /dev/null 2>&1
 }
 
 function view-source {
 
+    file=$1
     if [ -n "$arg_raw" ]; then
         printf "\n"
         which pygmentize > /dev/null 2>&1 && \
-            pygmentize -g $1 || cat $1
+            pygmentize -g $file || cat $file
         printf "\n"
     else
-        atom $1
+        atom $file
     fi
 }
 
