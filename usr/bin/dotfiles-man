@@ -66,7 +66,7 @@ function view-markdown {
     else
         file=$tmp_dir/$(echo $1 | md5).html
         perl $app_dir/markdown.pl --html4tags $1 > $file
-        [ $DIST == "macosx" ] && open $file > /dev/null 2>&1
+        [ $DIST == "macosx" ] && open -a "Google Chrome" --args $file > /dev/null 2>&1
         [ $DIST == "ubuntu" ] && gnome-open $file > /dev/null 2>&1
     fi
 }
@@ -107,5 +107,3 @@ function usage {
 }
 
 main $*
-
-exit 0

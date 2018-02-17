@@ -1,3 +1,3 @@
 #!/bin/sh
 
-alias dfm="~/usr/bin/dotfiles-man"
+alias dotm="~/usr/bin/dotfiles-man"
