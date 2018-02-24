@@ -39,7 +39,7 @@ function search {
         for file in $files; do
             str=$file
             for criterion in $criteria; do
-                str=$(echo $str | grep $criterion)
+                str=$(echo $str | grep -i $criterion)
             done
             [ -n "$str" ] && echo $str
         done
