@@ -55,6 +55,10 @@ function process {
         view-document $file
     elif [[ "${file##*.}" =~ ^(jpeg|png|svg) ]]; then
         view-image $file
+    elif [[ "${file##*.}" =~ ^(url) ]]; then
+        view-url $file
+    elif [[ "${file##*.}" =~ ^(file) ]]; then
+        view-file $file
     else
         view-source $file
     fi
@@ -64,12 +68,10 @@ function view-markdown {
 
     file=$1
     if [ -n "$arg_raw" ]; then
-        printf "\n"
         cat $file | \
             sed "s/^## /`printf "${bold}${white}"`## /g" | \
             sed "s/^#### /`printf "${blue}"`#### /g" | \
             perl -p -e "s/\n/${reset}\n/"
-        printf "\n"
     else
         html=$tmp_dir/$(echo $file | md5).html
         perl $app_dir/markdown.pl --html4tags $file > $html
@@ -80,26 +82,37 @@ function view-markdown {
 
 function view-document {
 
-    file=$1
-    [ $DIST == "macosx" ] && open $file > /dev/null 2>&1
-    [ $DIST == "ubuntu" ] && gnome-open $file > /dev/null 2>&1
+    document=$1
+    [ $DIST == "macosx" ] && open $document > /dev/null 2>&1
+    [ $DIST == "ubuntu" ] && gnome-open $document > /dev/null 2>&1
 }
 
 function view-image {
 
-    file=$1
-    [ $DIST == "macosx" ] && open $file > /dev/null 2>&1
-    [ $DIST == "ubuntu" ] && eog $file > /dev/null 2>&1
+    image=$1
+    [ $DIST == "macosx" ] && open $image > /dev/null 2>&1
+    [ $DIST == "ubuntu" ] && eog $image > /dev/null 2>&1
+}
+
+function view-url {
+
+    url=$(cat $1)
+    [ $DIST == "macosx" ] && open -a "Google Chrome" -n --args $url > /dev/null 2>&1 ||:
+    [ $DIST == "ubuntu" ] && gnome-open $url > /dev/null 2>&1 ||:
+}
+
+function view-file {
+
+    file=$(eval realpath $(cat $1))
+    view-source $file
 }
 
 function view-source {
 
     file=$1
     if [ -n "$arg_raw" ]; then
-        printf "\n"
         which pygmentize > /dev/null 2>&1 && \
             pygmentize -g $file || cat $file
-        printf "\n"
     else
         atom $file
     fi
