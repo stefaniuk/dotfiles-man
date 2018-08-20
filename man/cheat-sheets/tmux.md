@@ -40,6 +40,9 @@
     ;               go to the previously selected pane
     q               show pane numbers
     q <number>      go to the specific pane number
+    {               move the current pane left
+    }               move the current pane right
+    z               toggle pane zoom
 
 ##### Misc
 
