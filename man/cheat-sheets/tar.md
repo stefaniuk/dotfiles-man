@@ -6,4 +6,4 @@
 
 ##### unpack
 
-    tar -zxf ~/archive.tar.gz -C /tmp
+    tar -xvf ~/archive.tar.gz -C /tmp
