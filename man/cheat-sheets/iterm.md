@@ -1,42 +1,31 @@
-#### iTerm
+# iTerm
 
-##### Tab Navigation
+## Shortcuts
+
+### Tab Navigation
 
     cmd+t                           open new tab
     cmd+w                           close current tab
     shift+cmd+]                     next tab
     shift+cmd+[                     previous tab
+    cmd+<number>                    go to tab <number>
 
-##### Pane navigation
+### Pane navigation
 
     cmd+d                           split pane left-right
     shift+cmd+d                     split pane top-bottom
     cmd+]                           next pane
     cmd+[                           previous pane
 
-##### Visual
+### Visual
 
     cmd+return                      toggle full screen
-    cmd+plus                        make font larger
-    cmd+minus                       make font smaller
+    cmd+plus                        increase font size
+    cmd+minus                       decrease font size
+    cmd+0                           set font size to default
 
-##### Search
+### Search
 
     cmd+f                           open search bar
-    cmd+g                           find next
-
-##### Edit
-
-    ctrl+c                          cancel current line
-    ctrl+u                          clean up line to beginning
-    ctrl+k                          clean up line to end
-    ctrl+a                          go to beginning of line
-    ctrl+e                          go to end of line
-    ctrl+a ctrl+k                   deleted whole command
-    ctrl+y                          recall deleted command
-    ctrl+r                          search command
-
-##### Other
-
-    cmd+k                           clear buffer
-    alt+cmd+i                       input to all panes in current tab
+    cmd+g                           go to next occurrence
+    cmd+shift+g                     go to previous occurrence

@@ -14,7 +14,7 @@ Install this extension using the [`dotfiles`](https://github.com/stefaniuk/dotfi
 Usage
 -----
 
-    $ dotm --help
+    $ dman --help
 
     Usage: dotfiles-man term1 [term2 term3 ...]
 
@@ -23,10 +23,10 @@ Usage
             -r|--show-raw
             -h|--help
 
-    $ dotm -r versioning    # show it terminal
-    $ dotm versioning       # show it browser
+    $ dman -r versioning    # Show it in the terminal
+    $ dman versioning       # Show it in a browser
 
-TODO
-----
+Development
+-----------
 
-* Improve performance
+    $ alias dman="./usr/bin/dotfiles-man"

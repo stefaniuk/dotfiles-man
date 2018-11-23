@@ -1,36 +1,29 @@
 # Tmux
 
-## Commands
-
-    tmux ls                         # list sessions
-    tmux new -s <name>              # create new session
-    tmux attach -t <name>           # attach to session
-    tmux kill-session -t <name>     # kill session
-    tmux lscm                       # list commands
-    tmux source ~/.tmux.conf        # reload configuration
-
 ## Shortcuts
 
-##### Sessions
+All of the following commands must be prefixed by the `ctrl+a` keyboard shortcut.
+
+### Sessions
 
     s               list sessions
-    :new<CR>        new session
+    :new<enter>     new session
     $               name session
     d               detach from session
 
-##### Windows
+### Windows
 
     c               create new window
     &               kill the current window
-    n               go to the next window
-    p               go to the previous window
-    l               go to the previously selected window
-    <number>        go to the specific window number
+    n               next window
+    p               previous window
+    l               previously selected window
+    <number>        specific window number
     w               list all windows
     .               move window
     ,               rename the current window
 
-##### Panes
+### Panes
 
     %               vertical split
     "               horizontal split
@@ -44,13 +37,19 @@
     }               move the current pane right
     z               toggle pane zoom
 
-##### Misc
+### Misc
 
     :               prompt
     ?               list all key bindings
     ctrl+l ctrl+k   clear history (doesn't need the prefix)
+    fn+up           scroll up, press q to quit
+    fn+down         scroll down, press q to quit
 
-    pageUp          scroll up, press q to quit
-    fn+up
-    pageDown        scroll down, press q to quit
-    fn+down
+## Commands
+
+    tmux ls                         # list sessions
+    tmux new -s <name>              # create new session
+    tmux attach -t <name>           # attach to session
+    tmux kill-session -t <name>     # kill session
+    tmux lscm                       # list commands
+    tmux source ~/.tmux.conf        # reload configuration
