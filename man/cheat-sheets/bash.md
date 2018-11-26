@@ -14,3 +14,8 @@
     find . -type f -exec dos2unix {} \;                     # convert line-endings
     find . -type f -print0 | xargs -0 perl -pi -e 's/ +$//' # trim whitespace
     find . -type f -user 501 -exec chown 1000:staff {} \;   # change ownership
+
+    # Bootable USB stick from an ISO image
+    diskutil list
+    diskutil unmountDisk /dev/diskN
+    sudo dd if=~/Downloads/image.iso of=/dev/rdiskN bs=1m
